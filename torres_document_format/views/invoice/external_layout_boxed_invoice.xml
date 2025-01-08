@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <!-- Modificacion del layout, para imprimir logo o no, en funcion de show_logo -->
+    <template id="custom_layout_invoice" inherit_id="web.external_layout_folder">
+        <xpath expr="//img[@t-if='company.logo']" position="replace">
+            <img t-if="show_logo == 1" class="o_company_logo_big mb-2" t-att-src="image_data_uri(company.logo)" alt="Logo"/>
+        </xpath>
+    </template>
+
+    <!-- Modificacion del template de odoo para pasarle el show_logo = 1 -->
+    <template id="custom_report_invoice" inherit_id="account.report_invoice">
+        <xpath expr="//t[@t-call='account.report_invoice_document']" position="replace">
+            <t t-set="show_logo" t-value="1"/>
+            <t t-if="o._get_name_invoice_report() == 'account.report_invoice_document'" t-call="account.report_invoice_document" t-lang="lang"/>
+        </xpath>
+    </template>
+
+     <record id="account_invoices_without_payment" model="ir.actions.report">
+            <field name="name">PDF Sin logo</field>
+            <field name="model">account.move</field>
+            <field name="report_type">qweb-pdf</field>
+            <field name="report_name">torres_document_format.report_invoice_not_logo</field>
+            <field name="report_file">torres_document_format.report_invoice_not_logo</field>
+            <field name="print_report_name">(object._get_report_base_filename())</field>
+            <field name="attachment"/>
+            <field name="binding_model_id" ref="account.model_account_move"/>
+            <field name="binding_type">report</field>
+            <field name="domain" eval="[('move_type', '!=', 'entry')]"/>
+        </record>
+    <!-- Nuevo Informe que pasará show_logo=0 -->
+     <template id="report_invoice_not_logo">
+            <t t-call="web.html_container">
+                <t t-foreach="docs" t-as="o">
+                    <t t-set="lang" t-value="o.partner_id.lang"/>
+                    <t t-set="show_logo" t-value="0"/>
+                    <t t-if="o._get_name_invoice_report() == 'account.report_invoice_document'"
+                       t-call="account.report_invoice_document"
+                       t-lang="lang"/>
+                </t>
+            </t>
+        </template>
+</odoo>
