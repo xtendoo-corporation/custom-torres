@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <template id="custom_report_invoice" inherit_id="account.report_invoice_document">
+        <xpath expr="//div[@name='incoterm_id']" position="replace">
+            <div class="col" t-if="o.dossier" name="dossier">
+                <strong>Expediente</strong>
+                <div t-field="o.dossier" class="m-0"/>
+            </div>
+        </xpath>
+    </template>
+</odoo>
